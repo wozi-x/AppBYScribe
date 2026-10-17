@@ -1,11 +1,12 @@
 # Personal medical data: never commit these directories.
 /private/
-/data/
-/library/
-/imports/
-/reports/
-/output/
-/raw/
+data/
+library/
+imports/
+reports/
+output/
+outputs/
+raw/
 *.bys
 *.BYS
 source_files.json
@@ -22,6 +23,14 @@ verification.json
 *.jpeg
 *.heic
 *.zip
+*.html
+*.svg
+LATEST.json
+library.json
+complete.json
+inventory.json
+history_*.json
+observations.json
 
 # Python and development tooling.
 .venv/

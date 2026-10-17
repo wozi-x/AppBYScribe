@@ -9,9 +9,28 @@ from pathlib import PurePosixPath
 def violations(name, data):
     path = PurePosixPath(name)
     issues = []
-    if set(path.parts) & {"private", "data", "library", "imports", "reports", "output", "raw"}:
+    if set(path.parts) & {
+        "private",
+        "data",
+        "library",
+        "imports",
+        "reports",
+        "output",
+        "outputs",
+        "raw",
+    }:
         issues.append("personal/generated directory")
-    if path.suffix.lower() in {".bys", ".pdf", ".png", ".jpg", ".jpeg", ".heic", ".zip", ".html"}:
+    if path.suffix.lower() in {
+        ".bys",
+        ".pdf",
+        ".png",
+        ".jpg",
+        ".jpeg",
+        ".heic",
+        ".zip",
+        ".html",
+        ".svg",
+    }:
         issues.append("recording, media or generated artifact")
     if path.suffix.lower() == ".csv" and name != "examples/observations_template.csv":
         issues.append("CSV not on public-template allowlist")
@@ -20,6 +39,13 @@ def violations(name, data):
         "verification.json",
         "observations.csv",
         "package_manifest.json",
+        "LATEST.json",
+        "library.json",
+        "complete.json",
+        "inventory.json",
+        "history_provenance.json",
+        "history_conflicts.json",
+        "observations.json",
     }:
         issues.append("personal archive, observation or manifest")
     text = data.decode("utf-8", errors="replace")

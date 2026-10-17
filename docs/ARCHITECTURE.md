@@ -1,11 +1,17 @@
 # Architecture
 
-`workflow.execute()` selects one device folder, obtains a no-follow fingerprint, imports into a temporary directory and publishes an immutable import only if the captured inventory matches the stable input. A lock serializes library writes.
+| Module | Responsibility |
+|---|---|
+| `workflow.py` | Stable imports, library lock, deduplication and versioned publication |
+| `decoder.py` | Binary parsing, raw archives, validation and byte provenance |
+| `analysis.py` | Statistics, calendar coverage, byte ledger and streamed waveform CSV |
+| `ahi.py` | Integrity-gated estimates, exact-session comparisons and period totals |
+| `report.py` | Offline HTML/SVG: key results first, expandable details |
 
-`decoder.run()` preserves complete source bytes, parses summary/index/minute/detail structures, and records malformed regions and missing associations. `analysis.enrich()` creates byte ledgers, metric statistics, partial calendar summaries and streamed waveform CSVs. `ahi.build()` applies integrity gates and observation comparisons. `report.generate()` produces offline HTML and SVG without JavaScript or external dependencies.
+Imports are published only when the initial fingerprint, captured inventory and final fingerprint agree. Original files are archived with hashes; malformed and unknown bytes remain available.
 
-History groups sessions by serial/start time. All shared payloads must agree; missing detail can be added, while conflicts are retained and excluded from combined totals. Combined files use stable internal identities and preserve a provenance map to original imports. They are not claimed to reproduce the original directory tree; each import's raw archive does that.
+Sessions are grouped by serial/start time. Shared payloads must agree; missing detail can enrich a session. Conflicting versions are retained but excluded from combined totals. Combined files reorganize unchanged bytes; `history_provenance.json` maps them to original imports.
 
-Build outputs are versioned and the latest pointer advances after successful reporting. Original files and completed reports are never overwritten by normal execution. A successful import can survive a failed report rebuild.
+Reports are built in a temporary directory and published as a new version. `LATEST.json` advances only after success. An import can survive a failed report build. Normal runs never overwrite completed archives or reports.
 
-The package intentionally has no patient-specific constants. Test fixtures generate binary bytes in temporary directories and use an explicit synthetic identifier. Keep extensions to mappings and reporting independently testable and retain unknown bytes for future work.
+Public source and synthetic tests live outside `private/`. Each library also gets a `.gitignore` that ignores all its contents, including reports and temporary builds. No patient-specific constants or runtime network dependencies belong in the package.

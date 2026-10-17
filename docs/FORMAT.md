@@ -1,6 +1,6 @@
 # Observed ET525A BYS layout
 
-Offsets are zero-based decimal. Structure is distinguished from semantic confidence. This describes one observed format family, not every Yuwell model or firmware.
+Offsets are zero-based decimal. BYS is Yuwell-specific, not a standardized interchange format; the acronym's expansion is unverified. This describes the observed ET525A family, not every model or firmware. Structural checks do not establish physiological meaning.
 
 | File | Layout |
 |---|---|
@@ -54,7 +54,7 @@ Consecutive 60-second bins are assigned only when their header and session timin
 
 The working estimate is candidate counter total divided by elapsed hours. Publication requires complete minute records, matching counts/timestamps/duration, reconciled counters and no conflicting or overlapping session. Screen observations join on exact serial/start/end and compare at one decimal place. Alternative run-count and duration-word hypotheses remain exported.
 
-This does not establish clinical scoring accuracy, all event subtypes or all firmware behavior. A matched displayed total is supporting evidence for that session. Daily AHI cohorts use whole sessions by start date; calendar coverage is separately split at midnight.
+A displayed-total match supports that session, not clinical scoring accuracy, event labels or other firmware. AHI cohorts use whole sessions by start date and divide total counters by total hours, never average session AHIs. Any withheld session suppresses its cohort estimate. Calendar coverage separately splits at midnight; missing dates remain unknown. Display rounding is decimal half-up to one place, not a verified manufacturer convention.
 
 ## Detail blocks
 

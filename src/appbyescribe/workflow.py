@@ -225,7 +225,7 @@ def rebuild(library, observations):
         # Stable entry page only links to versioned report; no JavaScript or network redirect.
         index = library / ".index.tmp"
         index.write_text(
-            f'<!doctype html><meta charset="utf-8"><title>ET525A reports</title>'
+            f'<!doctype html><meta charset="utf-8"><title>AppByeScribe reports</title>'
             f'<h1>AppByeScribe local reports</h1><p><a href="reports/{report_id}/report.html">Open latest report</a></p>'
             f"<p>{len(canonical)} unique sessions; {len(conflicts)} conflicts excluded. Previous reports remain in reports/.</p>"
         )
@@ -249,11 +249,18 @@ def execute(source, library, observations_path=None):
         fd = os.open(lock, os.O_CREAT | os.O_EXCL | os.O_WRONLY, 0o600)
     except FileExistsError:
         raise ValueError(
-            "Library is locked. Wait for the other run; after a crash see README recovery instructions."
+            "Library is locked. Wait for the other run; after a crash see docs/WORKFLOW.md."
         )
     try:
         os.write(fd, str(os.getpid()).encode())
         os.close(fd)
+        # Apply to new and existing libraries, even under a custom directory name.
+        # This protects untracked output; it cannot remove previously committed files.
+        ignore = library / ".gitignore"
+        existing = ignore.read_text() if ignore.exists() else ""
+        rule = "# AppByeScribe: generated library contains personal health data.\n*\n"
+        if not existing.endswith(rule):
+            ignore.write_text(existing.rstrip() + "\n" + rule if existing else rule)
         (library / "imports").mkdir(exist_ok=True)
         (library / "observations").mkdir(exist_ok=True)
         if not (library / "library.json").exists():

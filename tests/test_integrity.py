@@ -4,7 +4,7 @@ import json
 import struct
 
 import pytest
-from test_et525a import decoder, make_source, summary
+from test_decoder import decoder, make_source, summary
 
 
 def archive(out):

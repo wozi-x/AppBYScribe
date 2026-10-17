@@ -2,7 +2,7 @@ from datetime import datetime
 import pytest
 
 from appbyescribe.analysis import percentile, stats, period_rows, period_bounds, METRICS, enrich
-from test_et525a import make_source, decoder
+from test_decoder import make_source, decoder
 
 
 def session(sid, start, end):

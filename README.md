@@ -1,85 +1,53 @@
 # AppByeScribe
 
-**Your breathing data, made readable.**
+Read Yuwell ET525A therapy recordings locally. Preserve original BYS files, accumulate a deduplicated history, and generate offline reports with qualified AHI estimates.
 
-AppByeScribe is a local, open-source toolkit for extracting Yuwell ET525A PAP recordings from BYS files. It preserves the original bytes, builds a deduplicated history and produces offline reports with explicit confidence labels.
+**Scope:** the observed ET525A format on Python 3.10+, macOS or Linux. BYS is vendor-specific and varies by model. This independent research tool is not clinically validated; Windows is not supported.
 
-Initial support is limited to the observed ET525A format. This is independent research software, not a manufacturer product or a clinically validated diagnostic tool.
+## Quick start
 
-## Features
-
-- Read-only card-folder imports with exact raw-byte archives and SHA-256 checks.
-- Complete minute-record exports, raw waveform samples, settings candidates and unknown-field preservation.
-- Session statistics and daily, weekly and monthly coverage summaries.
-- Qualified AHI estimates with exact-session machine-screen comparisons.
-- Repeated-import deduplication, conflict reporting and versioned offline HTML reports.
-- No network requests or third-party runtime dependencies.
-
-## Install
-
-Python 3.10+ on macOS or Linux is required. The filesystem safeguards use POSIX features; Windows is not supported in this release.
+Run from the repository root:
 
 ```sh
 python3 -m venv .venv
 source .venv/bin/activate
 python -m pip install -e .
-appbyescribe --version
-```
-
-## Use
-
-Copy the complete device folder from a stopped, stable card into `private/card-copies/`. Keep the internal filenames unchanged. Import a dated copy with:
-
-```sh
 appbyescribe "private/card-copies/YYYY-MM-DD/DEVICE_FOLDER" --library private/library
 ```
 
-Open **`private/library/index.html`** to reach the latest report. Reuse this library for later imports. Reimporting an identical copy does not duplicate sessions. Each device serial needs its own library.
+Use a complete, stable copy of the device folder. Open **`private/library/index.html`** for the latest report. Reuse the library for later imports; identical sessions are not counted twice. Use one library per device.
 
-To compare against exact-session screen readings, copy `examples/observations_template.csv` to `private/observations.csv`, fill it in, then run:
-
-```sh
-appbyescribe --library private/library --observations private/observations.csv
-```
-
-The CLI also works as `python -m appbyescribe`. See [the daily workflow](docs/WORKFLOW.md) for observation fields, report locations, recovery and limitations.
-
-## Interpretation and scope
-
-AHI is estimated from candidate event-counter sums divided by elapsed session hours, only when timestamps, record counts and counter totals reconcile. Exact-session screen matches provide supporting evidence; estimates do not automatically become validated for every mode or firmware. Event subtype names, waveform physical units and several settings remain unresolved.
-
-Calendar summaries split elapsed intervals at midnight. AHI period summaries instead group whole sessions by start date, preserving overnight counters. Missing dates remain unknown; these are not adherence calculations or reconstructed full-period therapy histories.
-
-See [format documentation](docs/FORMAT.md) and [research sources](docs/RESEARCH.md).
-
-## Repository layout
-
-```text
-src/appbyescribe/       Installable package and CLI
-  decoder.py           Binary layout, provenance and stable-source checks
-  analysis.py          Byte accounting, statistics and waveform CSV streaming
-  ahi.py               Qualified estimates and screen comparisons
-  report.py            Offline HTML/SVG reports
-  workflow.py          Imports, history deduplication and report publication
-tests/                 Synthetic fixtures and regression tests
-docs/                  Workflow, format, research and architecture
-examples/              Empty observation template
-scripts/               Public-tree privacy audit
-.github/workflows/     Tests and privacy checks
-private/               Local personal data; ignored and not distributed
-```
-
-## Development
+To rebuild without a new card copy:
 
 ```sh
-python -m pip install -e '.[dev]'
-git config core.hooksPath .githooks
-python -m pytest -q
-ruff check .
-ruff format --check .
-python scripts/check_public_tree.py
+appbyescribe --library private/library
 ```
 
-The optional local pre-commit hook runs the same privacy audit automatically. It checks Git's index, including staged file contents. `.gitignore` prevents accidental ordinary additions; it is not encryption and does not protect a file that has already been committed. Keep real recordings, screenshots, serials, observation logs and reports under `private/`. Public fixtures must be synthetic.
+For screen comparisons, copy `examples/observations_template.csv` to `private/observations.csv`, enter exact-session readings, then add `--observations private/observations.csv`. Saved observations are reused.
 
-Read [CONTRIBUTING.md](CONTRIBUTING.md) before submitting changes. Licensed under [MIT](LICENSE).
+## What the report means
+
+- **AHI:** candidate event counters / elapsed hours, withheld when integrity checks fail. A screen match supports that session; it does not validate all event labels, modes or firmware.
+- **Periods:** AHI groups whole sessions by start date; calendar coverage splits time at midnight. Missing dates are unknown, not zero use.
+- **Signals:** pressure, leak and breathing metrics have probable meanings. Waveform units and some fields remain unresolved; zero oxygen/pulse slots mean unavailable.
+- **Completeness:** all imported bytes are archived, including unknown and malformed data. This does not prove the card recorded every machine operation or that elapsed time equals sleep time.
+
+Full CSV/JSON exports remain available behind the concise report. No runtime network requests or third-party runtime dependencies are used.
+
+## Files and documentation
+
+| Location | Purpose |
+|---|---|
+| `src/appbyescribe/` | Decoder, analysis, AHI, report and import workflow |
+| `tests/` | Synthetic fixtures and regression tests |
+| `docs/WORKFLOW.md` | Daily use, outputs and recovery |
+| `docs/FORMAT.md` | Byte layouts, confidence and limits |
+| `docs/ARCHITECTURE.md` | Processing stages and data ownership |
+| `docs/RESEARCH.md` | Research sources and evidence policy |
+| `examples/` | Blank observation template |
+| `scripts/`, `.githooks/`, `.github/` | Privacy audit and development checks |
+| `private/` | Ignored card copies, observations, photos and generated libraries |
+
+**Keep personal data in `private/`.** Generated libraries also contain their own `.gitignore`. Ignore rules do not protect already tracked files. Never publish a ZIP of the working directory; use `git archive HEAD` for a source-only archive.
+
+For checks and contribution rules, see [CONTRIBUTING.md](CONTRIBUTING.md). [Security and privacy](SECURITY.md) · [MIT license](LICENSE).

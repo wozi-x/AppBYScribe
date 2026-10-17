@@ -1,63 +1,70 @@
 # Daily workflow
 
-1. Finish therapy and let the machine finish writing before removing the card, following its instructions. Photograph the session AHI and usage display before another session replaces it.
-2. Copy the whole device folder into a dated directory under `private/card-copies/`. Do not rename internal files. A stable copy is preferable to a card still being written.
-3. Run `appbyescribe INPUT --library private/library` from the project directory.
-4. Open `private/library/index.html`. Keep the same library for subsequent imports and back up the whole `private/` directory separately from Git.
+1. End therapy and let the machine finish writing before removing the card, following its instructions. Photograph session AHI and usage before another session replaces the display.
+2. Copy the complete device folder to `private/card-copies/YYYY-MM-DD/`; preserve internal names.
+3. Run `appbyescribe INPUT --library private/library` and open `private/library/index.html`.
+4. Reuse the library for future imports. Back up `private/` separately; Git intentionally excludes it.
 
-An input can be a device folder, or a card root containing exactly one `ET525A-*` folder. If multiple folders exist, select one explicitly. The library and input must not contain each other. No input files or machine settings are modified.
+`INPUT` may be a device folder or a card root with exactly one `ET525A-*` folder. Select explicitly if there are several. Input and library must not contain each other. Inputs and machine settings are never changed. Run `appbyescribe --library private/library` to rebuild saved data without the card.
 
-## Machine-screen observations
+## Screen observations
 
-The empty public template is `examples/observations_template.csv`. Save filled copies under `private/`. Required columns:
+Copy `examples/observations_template.csv` to `private/observations.csv`. Keep all columns:
 
-| Column | Content |
+| Column | Value |
 |---|---|
 | `model_serial` | Exact device serial |
-| `start_time`, `end_time` | Exact device wall-clock timestamps, `YYYY-MM-DDTHH:MM:SS`, no timezone suffix |
-| `displayed_ahi` | AHI shown for that exact session |
-| `displayed_usage_hours` | Session usage shown; may be blank |
-| `notes` | Screen scope, interruptions, photo filename and uncertainties |
+| `start_time`, `end_time` | Exact report timestamps: `YYYY-MM-DDTHH:MM:SS`, no timezone suffix |
+| `displayed_ahi` | AHI for that exact session |
+| `displayed_usage_hours` | Displayed session hours; may be blank |
+| `notes` | Optional screen scope, photo filename or uncertainty |
 
-Use start/end timestamps from the extracted report. Do not guess session identity from a matching AHI or rounded duration. A daily-total screen must not be assigned to one interval when several sessions contribute to it.
+```sh
+appbyescribe --library private/library --observations private/observations.csv
+```
 
-`appbyescribe --library private/library --observations private/observations.csv` adds observations and rebuilds without reading the card. Saved observations are reused on later runs. Unmatched rows remain unmatched; disagreements are displayed without tuning the formula. Conflicting values for the same session are rejected. If correcting a saved observation, retain the old CSV outside the library, remove that old observation source from `private/library/observations/`, and rebuild with the corrected CSV. Previous reports remain unchanged.
+Observations persist across runs. Match the actual session; rounded usage or matching AHI alone cannot identify it. Do not assign a daily-total screen to one interval if several sessions contributed. Disagreements and unmatched rows remain visible; conflicting readings are rejected.
 
-## Output locations
+To correct a saved reading, preserve the old CSV outside `library/observations/`, remove that source from `library/observations/`, and rebuild with the corrected CSV. Previous reports remain unchanged.
 
-| Path inside the library | Content |
+## Library structure
+
+```text
+private/
+  card-copies/YYYY-MM-DD/DEVICE_FOLDER/
+  observations.csv
+  photos/
+  library/
+    .gitignore                    Ignores all library contents
+    index.html                    Link to latest report
+    LATEST.json                   Latest successful version
+    observations/                 Saved screen readings
+    imports/<hash>/               Original archives, inventory, extraction
+    reports/<timestamp>/          Combined report and exports
+```
+
+Inside each report version:
+
+| File | Content |
 |---|---|
-| `imports/<hash>/raw/source_files.json` | Every original file as hex, with path, length and SHA-256 |
-| `imports/<hash>/inventory.json` | Original file inventory |
-| `imports/<hash>/output/` | Per-import extraction and diagnostics, including orphan records |
-| `reports/<timestamp>/report.html` | Combined offline report |
-| `reports/<timestamp>/output/ahi_sessions.csv` | Estimates, evidence, failed checks and screen comparisons |
-| `reports/<timestamp>/output/timeseries.csv` | Time-valid minute records and probable physical fields |
-| `reports/<timestamp>/output/session_statistics.csv` | Mean, minimum, median, P90, P95 and maximum |
-| `reports/<timestamp>/output/*coverage_summary.csv` | Midnight-split calendar coverage and metric statistics |
-| `reports/<timestamp>/output/ahi_*_session_cohorts.csv` | Whole-session AHI grouped by start date/week/month |
-| `reports/<timestamp>/output/waveform_samples.csv` | Structurally accepted sample pairs and original offsets |
-| `reports/<timestamp>/output/settings_candidates.csv` | History/settings candidates, when present |
-| `reports/<timestamp>/output/byte_segments.csv` | Complete combined-source byte ledger |
-| `reports/<timestamp>/history_provenance.json` | Combined files mapped to original imports |
-| `reports/<timestamp>/history_conflicts.json` | Conflicting versions excluded from combined totals |
+| `report.html` | Session AHI, daily/weekly/monthly summaries and expandable charts |
+| `output/ahi_sessions.csv` | Estimates, screen comparisons, failed checks and alternatives |
+| `output/ahi_*_session_cohorts.csv` | Whole-session AHI grouped by start date/week/month |
+| `output/*coverage_summary.csv` | Midnight-split time coverage and metric statistics |
+| `output/timeseries.csv`, `output/session_statistics.csv` | Valid minute measurements; mean, min, median, P90, P95, max |
+| `output/waveform_samples.csv`, `output/raw_minute_records.csv` | Accepted raw samples and minute records |
+| `output/settings_candidates.csv` | Probable settings/history, when present |
+| `output/byte_segments.csv`, `output/byte_coverage.json` | Byte accounting |
+| `history_provenance.json`, `history_conflicts.json` | Original-source links and excluded conflicting versions |
 
-Combined reports reorganize unchanged bytes and deduplicate sessions. Original index files, metadata, rejected bytes and unpaired data remain in the immutable per-import archives. Raw preservation does not mean every byte's meaning is understood. Core legacy `ahi` fields remain empty; the estimate fields are in `ahi_sessions.csv`.
+Original files, indexes, metadata and rejected/unpaired records remain under `imports/<hash>/`: `raw/source_files.json` stores exact bytes as hex with hashes; `inventory.json` lists files; `output/` holds extraction and diagnostics. Core legacy `ahi` fields are empty; use `ahi_sessions.csv` for estimates.
 
-## Deduplication and recovery
+## Recovery and limits
 
-Exact imports are identified by paths, sizes and hashes. Sessions are grouped by serial and start time, and shared data must agree before merging. New detail can enrich an existing session. Differing end times, summary/history or minute/detail payloads create a conflict; all versions remain archived and the session is excluded from combined totals. This may happen when an in-progress session is later exported as complete. Review both versions instead of automatically trusting the newest one.
+- **Duplicate import:** harmless. Identical content is reused. Missing detail can enrich an existing session; differing shared data creates an excluded conflict. Review both versions, including incomplete vs completed sessions, rather than assuming the newest is correct.
+- **Unstable input:** retry from a stopped, stable card copy. No completed import is published for a failed stability check.
+- **Failed report:** retry with `--library` only. The previous successful report stays available.
+- **Stale lock after a crash:** inspect `.import.lock` and verify its process is no longer running before removing it. Only then remove leftover `.import-*` or `.build-*` directories if needed. Never edit completed imports or reports.
+- **Capacity:** input is limited to 512 MiB. Raw archives use memory; streamed waveform CSVs and retained versions can require much more disk space than the card data.
 
-Unstable inputs are not published as completed imports. Report versions are preserved and `LATEST.json` advances only after a successful rebuild. If reporting fails after an import succeeds, retry with only `--library`.
-
-Only one process may write a library. After a crash, inspect `.import.lock` and verify its process is no longer running before removing only the stale lock. Once no process is active, leftover `.import-*` and `.build-*` temporary directories can be removed. Do not manually edit completed import archives or reports.
-
-## Limits
-
-- Unknown device timezone and clock accuracy; no implicit UTC conversion.
-- Elapsed session time is not proven sleep time or mask-on time.
-- Missing dates are unknown, not zero use. No adherence denominator is invented.
-- Waveform channel names, gain and baseline remain unresolved.
-- Oxygen/pulse slots stay raw; zero is not a measured physiological value.
-- Input over 512 MiB is rejected. Raw archives still use memory; waveform CSVs are streamed but can be much larger than binary files. Retained reports also consume disk space.
-- A card export does not establish that every internal machine operation was recorded.
+Times use the device clock with unknown timezone/accuracy. Elapsed time is not proven sleep or mask-on time. Missing dates are unknown; no adherence rate is inferred. Physical labels remain probable, waveform scaling is unresolved, and zero oxygen/pulse slots are unavailable. See [FORMAT.md](FORMAT.md) for exact confidence and validation rules.

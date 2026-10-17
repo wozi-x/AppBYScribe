@@ -1,13 +1,14 @@
 import csv
 import json
 import struct
+import subprocess
 import pytest
 
 from appbyescribe.workflow import execute
 from appbyescribe.decoder import run
 from appbyescribe.analysis import enrich, period_rows
 from appbyescribe.ahi import build
-from test_et525a import make_source, summary, minutes, stamp
+from test_decoder import make_source, summary, minutes, stamp
 
 
 def read(path):
@@ -54,6 +55,37 @@ def test_repeat_import_is_idempotent_and_html_created(tmp_path):
     assert read(latest(lib) / "complete.json")["sessions"] == 1
     assert "60.0" in (latest(lib) / "report.html").read_text()
     assert original == {str(p): p.read_bytes() for p in src.rglob("*") if p.is_file()}
+
+
+def test_custom_library_is_ignored_and_existing_rules_are_preserved(tmp_path):
+    src = make_source(tmp_path)
+    repo = tmp_path / "repo"
+    repo.mkdir()
+    subprocess.run(["git", "init", "-q", str(repo)], check=True)
+    lib = repo / "my-recordings"
+    execute(src, lib)
+    rule = (lib / ".gitignore").read_text()
+    result = subprocess.run(
+        ["git", "ls-files", "--others", "--exclude-standard"],
+        cwd=repo,
+        text=True,
+        capture_output=True,
+        check=True,
+    )
+    assert result.stdout == ""
+    # Existing libraries are protected on rebuild, with prior rules retained.
+    (lib / ".gitignore").write_text("# existing comment\n!important.json\n")
+    execute(None, lib)
+    combined = (lib / ".gitignore").read_text()
+    assert combined.startswith("# existing comment") and combined.endswith(rule)
+    execute(None, lib)
+    assert (lib / ".gitignore").read_text() == combined
+    assert (
+        subprocess.run(
+            ["git", "check-ignore", "-q", "my-recordings/important.json"], cwd=repo
+        ).returncode
+        == 0
+    )
 
 
 def test_overlapping_exports_deduplicate_and_enrich_detail(tmp_path):
