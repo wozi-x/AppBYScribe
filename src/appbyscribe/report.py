@@ -221,9 +221,9 @@ def generate(root, ahi, conflicts):
     parts = [
         '<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">',
         "<meta http-equiv=\"Content-Security-Policy\" content=\"default-src 'none'; style-src 'unsafe-inline'; img-src data:; connect-src 'none'\">",
-        "<title>AppByeScribe report</title><style>",
+        "<title>AppBYScribe report</title><style>",
         "body{font:15px/1.5 system-ui,sans-serif;color:#183641;max-width:1120px;margin:28px auto;padding:0 20px;background:#f7fafb}h1{margin-bottom:4px}h2{font-size:21px;margin-top:28px}h3{font-size:17px}a{color:#12657c}table{border-collapse:collapse;width:100%;background:white}td,th{border-bottom:1px solid #cbd6da;text-align:left;padding:8px;vertical-align:top}.table{overflow:auto}.note{padding:12px;background:#fff1d8;border-left:4px solid #bd5a13}.muted{color:#46606b}.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:10px;margin:18px 0}.card{background:#e4eff2;border-radius:8px;padding:12px}.card strong{display:block;font-size:24px}summary{cursor:pointer;font-weight:600;padding:11px;background:#e4eff2}details{margin:12px 0}svg{display:block;width:100%;font:12px sans-serif}figure{margin:18px 0}figcaption{font-weight:600}.exports{columns:2}.small{font-size:13px}@media(max-width:650px){.cards{grid-template-columns:repeat(2,1fr)}.exports{columns:1}body{padding:0 12px}td,th{padding:6px}}@media print{body{background:white;margin:0}.table{overflow:visible}details{break-inside:avoid}a{color:inherit}}",
-        "</style></head><body><h1>AppByeScribe</h1>",
+        "</style></head><body><h1>AppBYScribe</h1>",
         f'<p class="muted">ET525A · {esc(dates)} · device clock; timezone unknown</p>',
         '<div class="cards">',
         f'<div class="card"><strong>{len(sessions)}</strong>recorded sessions</div>',

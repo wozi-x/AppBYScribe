@@ -3,13 +3,13 @@ requires = ["setuptools>=68"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "appbyescribe"
+name = "appbyscribe"
 version = "0.1.0"
 description = "Local extraction, byte preservation and evidence-qualified reports for ET525A PAP recordings"
 readme = "README.md"
 requires-python = ">=3.10"
 license = {text = "MIT"}
-authors = [{name = "AppByeScribe contributors"}]
+authors = [{name = "AppBYScribe contributors"}]
 dependencies = []
 classifiers = [
   "Development Status :: 3 - Alpha",
@@ -23,7 +23,7 @@ classifiers = [
 dev = ["pytest>=8", "ruff>=0.9"]
 
 [project.scripts]
-appbyescribe = "appbyescribe.workflow:main"
+appbyscribe = "appbyscribe.workflow:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]

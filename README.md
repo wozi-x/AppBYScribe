@@ -1,4 +1,4 @@
-# AppByeScribe
+# AppBYScribe
 
 Read Yuwell ET525A therapy recordings locally. Preserve original BYS files, accumulate a deduplicated history, and generate offline reports with qualified AHI estimates.
 
@@ -12,7 +12,7 @@ Run from the repository root:
 python3 -m venv .venv
 source .venv/bin/activate
 python -m pip install -e .
-appbyescribe "private/card-copies/YYYY-MM-DD/DEVICE_FOLDER" --library private/library
+appbyscribe "private/card-copies/YYYY-MM-DD/DEVICE_FOLDER" --library private/library
 ```
 
 Use a complete, stable copy of the device folder. Open **`private/library/index.html`** for the latest report. Reuse the library for later imports; identical sessions are not counted twice. Use one library per device.
@@ -20,7 +20,7 @@ Use a complete, stable copy of the device folder. Open **`private/library/index.
 To rebuild without a new card copy:
 
 ```sh
-appbyescribe --library private/library
+appbyscribe --library private/library
 ```
 
 For screen comparisons, copy `examples/observations_template.csv` to `private/observations.csv`, enter exact-session readings, then add `--observations private/observations.csv`. Saved observations are reused.
@@ -38,7 +38,7 @@ Full CSV/JSON exports remain available behind the concise report. No runtime net
 
 | Location | Purpose |
 |---|---|
-| `src/appbyescribe/` | Decoder, analysis, AHI, report and import workflow |
+| `src/appbyscribe/` | Decoder, analysis, AHI, report and import workflow |
 | `tests/` | Synthetic fixtures and regression tests |
 | `docs/WORKFLOW.md` | Daily use, outputs and recovery |
 | `docs/FORMAT.md` | Byte layouts, confidence and limits |

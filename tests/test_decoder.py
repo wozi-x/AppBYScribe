@@ -5,7 +5,7 @@ import struct
 
 import pytest
 
-from appbyescribe import decoder
+from appbyscribe import decoder
 
 
 def stamp(hour=23, minute=59, day=1):

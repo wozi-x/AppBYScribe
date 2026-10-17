@@ -2,10 +2,10 @@
 
 1. End therapy and let the machine finish writing before removing the card, following its instructions. Photograph session AHI and usage before another session replaces the display.
 2. Copy the complete device folder to `private/card-copies/YYYY-MM-DD/`; preserve internal names.
-3. Run `appbyescribe INPUT --library private/library` and open `private/library/index.html`.
+3. Run `appbyscribe INPUT --library private/library` and open `private/library/index.html`.
 4. Reuse the library for future imports. Back up `private/` separately; Git intentionally excludes it.
 
-`INPUT` may be a device folder or a card root with exactly one `ET525A-*` folder. Select explicitly if there are several. Input and library must not contain each other. Inputs and machine settings are never changed. Run `appbyescribe --library private/library` to rebuild saved data without the card.
+`INPUT` may be a device folder or a card root with exactly one `ET525A-*` folder. Select explicitly if there are several. Input and library must not contain each other. Inputs and machine settings are never changed. Run `appbyscribe --library private/library` to rebuild saved data without the card.
 
 ## Screen observations
 
@@ -20,7 +20,7 @@ Copy `examples/observations_template.csv` to `private/observations.csv`. Keep al
 | `notes` | Optional screen scope, photo filename or uncertainty |
 
 ```sh
-appbyescribe --library private/library --observations private/observations.csv
+appbyscribe --library private/library --observations private/observations.csv
 ```
 
 Observations persist across runs. Match the actual session; rounded usage or matching AHI alone cannot identify it. Do not assign a daily-total screen to one interval if several sessions contributed. Disagreements and unmatched rows remain visible; conflicting readings are rejected.

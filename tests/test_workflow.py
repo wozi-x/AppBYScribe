@@ -4,10 +4,10 @@ import struct
 import subprocess
 import pytest
 
-from appbyescribe.workflow import execute
-from appbyescribe.decoder import run
-from appbyescribe.analysis import enrich, period_rows
-from appbyescribe.ahi import build
+from appbyscribe.workflow import execute
+from appbyscribe.decoder import run
+from appbyscribe.analysis import enrich, period_rows
+from appbyscribe.ahi import build
 from test_decoder import make_source, summary, minutes, stamp
 
 
@@ -245,7 +245,7 @@ def test_overlap_does_not_suppress_unrelated_day():
 
 
 def test_workflow_rejects_capture_that_differs_from_initial_fingerprint(tmp_path, monkeypatch):
-    from appbyescribe import workflow
+    from appbyscribe import workflow
 
     src = make_source(tmp_path)
     lib = tmp_path / "lib"
@@ -272,7 +272,7 @@ def test_workflow_rejects_capture_that_differs_from_initial_fingerprint(tmp_path
 
 
 def test_workflow_rejects_symlink_swap_during_fingerprint(tmp_path, monkeypatch):
-    from appbyescribe import decoder as et525a
+    from appbyscribe import decoder as et525a
 
     src = make_source(tmp_path)
     outside = tmp_path / "outside"

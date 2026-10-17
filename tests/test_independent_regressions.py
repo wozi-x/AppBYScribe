@@ -9,7 +9,7 @@ import unittest
 from pathlib import Path
 from independent_fixtures import STAMP, summary, minutes, fixture
 
-from appbyescribe import decoder
+from appbyscribe import decoder
 
 
 class RevisedDecoderTests(unittest.TestCase):

@@ -4,8 +4,8 @@ import re
 from html import unescape
 from pathlib import Path
 
-from appbyescribe.report import interval, number, plot
-from appbyescribe.workflow import execute
+from appbyscribe.report import interval, number, plot
+from appbyscribe.workflow import execute
 from test_decoder import make_source
 from test_workflow import observation, prepare
 

@@ -1,7 +1,7 @@
 from datetime import datetime
 import pytest
 
-from appbyescribe.analysis import percentile, stats, period_rows, period_bounds, METRICS, enrich
+from appbyscribe.analysis import percentile, stats, period_rows, period_bounds, METRICS, enrich
 from test_decoder import make_source, decoder
 
 
