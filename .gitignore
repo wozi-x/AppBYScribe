@@ -1,0 +1,42 @@
+# Personal medical data: never commit these directories.
+/private/
+/data/
+/library/
+/imports/
+/reports/
+/output/
+/raw/
+*.bys
+*.BYS
+source_files.json
+observations.csv
+*manifest.json
+verification.json
+
+# Recordings, photos, generated exports and archives.
+*.csv
+!examples/observations_template.csv
+*.pdf
+*.png
+*.jpg
+*.jpeg
+*.heic
+*.zip
+
+# Python and development tooling.
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+build/
+dist/
+*.egg-info/
+.DS_Store
+.env
+.env.*
+.idea/
+.vscode/
